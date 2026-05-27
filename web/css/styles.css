@@ -1,0 +1,277 @@
+/* =============================================================================
+   MEMORY MATCH — styles.css (appearance and layout)
+
+   CSS selects HTML elements (by tag, class, or id) and sets visual rules.
+   Classes like "card" match class="card" in HTML/JS. game.js adds "flipped"
+   and "matched" classes to trigger the flip animation defined below.
+   ============================================================================= */
+
+/* ----- Global box model -----
+   * = every element. border-box keeps padding inside width/height so the
+   4×4 grid does not overflow when gaps and padding are applied. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ----- Full page background and centering ----- */
+body {
+  margin: 0;
+  min-height: 100vh; /* vh = viewport height; at least one full screen tall */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(160deg, #e8eef4 0%, #d4dce8 100%);
+  color: #1a2332;
+  display: flex; /* flexbox: easy horizontal + vertical centering */
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Main column from <main class="app"> in index.html */
+.app {
+  width: 100%;
+  max-width: 420px; /* keeps game compact on wide monitors */
+  text-align: center;
+}
+
+/* ----- Header (title + subtitle) ----- */
+.header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0 0 1.25rem;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+/* ----- HUD: moves and timer side by side ----- */
+.hud {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem; /* space between Moves and Time */
+  margin-bottom: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column; /* label above number */
+  gap: 0.15rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums; /* digits same width — timer won't jump */
+}
+
+#timer {
+  font-size: 1.15rem; /* room for minutes:seconds.centiseconds */
+}
+
+/* ----- Card grid (#board) — 4 columns × 4 rows = 16 cards ----- */
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  perspective: 800px; /* needed for 3D flip on .card-inner */
+}
+
+/* game.js adds "disabled" while comparing two cards or before Start */
+.board.disabled {
+  pointer-events: none; /* block clicks */
+  opacity: 0.85;
+}
+
+/* ----- Single card (each card is a <button> created in game.js) ----- */
+.card {
+  aspect-ratio: 1; /* square tiles */
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* Keyboard focus ring (Tab to a card, then Enter/Space) */
+.card:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.card:disabled {
+  cursor: default;
+}
+
+/* Wrapper that rotates for the flip effect */
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d; /* children (.card-face) exist in 3D space */
+  transition: transform 0.4s ease;
+  border-radius: 10px;
+}
+
+/* When game.js adds class "flipped" or "matched", show the front face */
+.card.flipped .card-inner,
+.card.matched .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Shared styles for back (?) and front (picture) faces */
+.card-face {
+  position: absolute;
+  inset: 0; /* top/right/bottom/left: 0 — fill the card */
+  backface-visibility: hidden; /* hide the side facing away from viewer */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Face down — visible before flip */
+.card-back {
+  background: linear-gradient(135deg, #4f6b8a 0%, #3d556f 100%);
+  color: #a8c4e0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Face up — photo; pre-rotated 180° so it reads correctly after flip */
+.card-front {
+  background: #fff;
+  transform: rotateY(180deg);
+  overflow: hidden;
+}
+
+.card-front .card-image {
+  width: 88%;
+  height: 88%;
+  object-fit: cover;
+  border-radius: 6px;
+  pointer-events: none; /* clicks go to the button, not the img */
+}
+
+/* Stay green-tinted after a successful match */
+.card.matched .card-front {
+  background: #e8f5e9;
+  box-shadow: 0 0 0 2px #66bb6a;
+}
+
+/* ----- Status message under the grid ----- */
+.status {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+  min-height: 1.35em; /* prevents layout jump when text changes */
+}
+
+/* ----- Start / Restart button row ----- */
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98); /* slight press effect */
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+/* ----- Win popup (#win-overlay) ----- */
+.win-overlay {
+  position: fixed; /* covers entire viewport */
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45); /* semi-transparent dim */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 10; /* draw above cards and buttons */
+}
+
+/* index.html starts with class="hidden"; game.js removes it on win */
+.win-overlay.hidden {
+  display: none;
+}
+
+.win-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.win-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.win-card p {
+  margin: 0 0 1.25rem;
+  color: #4a5568;
+}
+
+/* ----- Small phones: tighter grid ----- */
+@media (max-width: 360px) {
+  .board {
+    gap: 0.35rem;
+  }
+
+  .card-back {
+    font-size: 1.2rem;
+  }
+
+  .card-front .card-image {
+    width: 92%;
+    height: 92%;
+  }
+}

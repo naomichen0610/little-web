@@ -1,0 +1,94 @@
+<!-- =============================================================================
+     MEMORY MATCH — index.html (page structure)
+
+     HTML defines WHAT appears on the page. Styling is in css/styles.css.
+     Game logic (clicks, matching, scoring) is in js/game.js.
+
+     Open: double-click this file, or use a local server → /web/ on localhost
+     ============================================================================= -->
+
+<!-- Tells the browser this document uses modern HTML5 rules -->
+<!DOCTYPE html>
+
+<!-- lang="en" helps screen readers and search tools know the page language -->
+<html lang="en">
+
+<!-- ========== HEAD: settings and links (not the main visible game UI) ========== -->
+<head>
+  <!-- Character encoding: supports text and file paths for card images -->
+  <meta charset="UTF-8">
+
+  <!-- Makes layout scale correctly on phones (viewport = visible screen area) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Text shown in the browser tab -->
+  <title>Memory Match</title>
+
+  <!-- Links this page to styles.css — controls colors, grid, card flip animation -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<!-- ========== BODY: everything the player sees and interacts with ========== -->
+<body>
+
+  <!-- main.app = centered column wrapper (styled in styles.css) -->
+  <main class="app">
+
+    <!-- ----- Title area ----- -->
+    <header class="header">
+      <h1>Memory Match</h1>
+      <p class="subtitle">Find all matching pairs</p>
+    </header>
+
+    <!-- ----- HUD = "heads-up display" (live stats while playing) ----- -->
+    <!-- aria-label describes this block for screen readers -->
+    <section class="hud" aria-label="Game stats">
+
+      <div class="stat">
+        <span class="stat-label">Moves</span>
+        <!-- id="moves" lets game.js find this element and update the number -->
+        <span id="moves" class="stat-value">0</span>
+      </div>
+
+      <div class="stat">
+        <span class="stat-label">Time</span>
+        <!-- id="timer" — game.js updates every 0.01s (format 0:00.00) after first card flip -->
+        <span id="timer" class="stat-value">0:00.00</span>
+      </div>
+    </section>
+
+    <!-- ----- Card grid (empty here; game.js builds 16 card buttons inside) ----- -->
+    <!-- id="board" is required — game.js uses getElementById("board") -->
+    <!-- role="grid" + aria-label improve accessibility for the card layout -->
+    <div id="board" class="board" role="grid" aria-label="Card grid"></div>
+
+    <!-- Hint text: game.js changes this (e.g. "Pick another card", "You win!") -->
+    <p id="status" class="status" role="status">Press Start to begin</p>
+
+    <!-- ----- Control buttons ----- -->
+    <div class="controls">
+      <!-- id="start-btn" — game.js listens for click → starts / reshuffles game -->
+      <button id="start-btn" type="button" class="btn btn-primary">Start</button>
+
+      <!-- disabled until a game has started; same reset logic as Start when clicked -->
+      <button id="restart-btn" type="button" class="btn btn-secondary" disabled>Restart</button>
+    </div>
+
+    <!-- ----- Win popup (hidden until all pairs are matched) ----- -->
+    <!-- class "hidden" sets display:none in CSS; game.js removes it on win -->
+    <div id="win-overlay" class="win-overlay hidden" role="dialog" aria-labelledby="win-title" aria-modal="true">
+      <div class="win-card">
+        <h2 id="win-title">You win!</h2>
+        <!-- Empty until win — game.js fills with moves and time -->
+        <p id="win-message"></p>
+        <button id="play-again-btn" type="button" class="btn btn-primary">Play again</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Loads game.js after the HTML above exists, so script can find #board, #moves, etc. -->
+  <script src="js/game.js"></script>
+
+</body>
+</html>
